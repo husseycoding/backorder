@@ -1,0 +1,75 @@
+<?php if ($this->isEnabled()): ?>
+    <script type="text/javascript">
+        //<![CDATA[
+            var thisbackorder = new backorder();
+            <?php $isproduct = $this->isProduct(); ?>
+            <?php $iscart = $this->isCart(); ?>
+            thisbackorder.isproduct = <?php echo $isproduct; ?>;
+            thisbackorder.iscart = <?php echo $iscart; ?>;
+            thisbackorder.estimatetext = "<?php echo $this->__('Estimated dispatch'); ?>";
+            thisbackorder.orderbefore = <?php echo $this->getOrderBefore(); ?>;
+            thisbackorder.orderbeforetodaytext = "<?php echo $this->__('Dispatched today if ordered within the next'); ?>";
+            thisbackorder.orderbeforetomorrowtext = "<?php echo $this->__('Dispatched tomorrow if ordered within the next'); ?>";
+            thisbackorder.cutoff = "<?php echo $this->getCutOff(); ?>";
+            thisbackorder.now = "<?php echo Mage::getModel('core/date')->timestamp(); ?>";
+            <?php if ($isproduct == 'true'): ?>
+                <?php if ($estimate = $this->getProductEstimate()): ?>
+                    thisbackorder.producttype = "<?php echo $this->getProductType(); ?>";
+                    <?php if (!is_array($estimate)): ?>
+                        thisbackorder.productestimate = "<?php echo $estimate; ?>";
+                    <?php else: ?>
+                        thisbackorder.productestimate = <?php echo Mage::helper('core')->jsonEncode($estimate); ?>;
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php elseif ($iscart == 'true'): ?>
+                thisbackorder.cartestimates = <?php echo $this->getCartEstimates(); ?>;
+                thisbackorder.itemids = <?php echo $this->getItemIds(); ?>;
+                thisbackorder.delayedtext = "<?php echo $this->__('I understand this product will be delayed'); ?>";
+                thisbackorder.acceptedurl = "<?php echo $this->getUrl('backorder'); ?>";
+                thisbackorder.hasaccepted = <?php echo $this->getHasAccepted(); ?>;
+                thisbackorder.acceptedids = <?php echo $this->getAcceptedIds(); ?>;
+                thisbackorder.acceptenabled = <?php echo $this->acceptEnabled(); ?>;
+            <?php endif; ?>
+            
+            if (typeof(spConfig) == "object") {
+                spConfig.getIdOfSelectedProduct = function() {
+                    var existingProducts = new Object();
+                    for (var i = this.settings.length - 1; i >= 0; i--) {
+                        var selected = this.settings[i].options[this.settings[i].selectedIndex];
+                        if (selected.config) {
+                            for (var iproducts = 0; iproducts < selected.config.products.length; iproducts++) {
+                                var usedAsKey = selected.config.products[iproducts] + "";
+                                if (existingProducts[usedAsKey] == undefined) {
+                                    existingProducts[usedAsKey] = 1;
+                                } else {
+                                    existingProducts[usedAsKey] = existingProducts[usedAsKey] + 1;
+                                }
+                            }
+                        }
+                    }
+                    for (var keyValue in existingProducts) {
+                        for (var keyValueInner in existingProducts) {
+                            if (Number(existingProducts[keyValueInner]) < Number(existingProducts[keyValue])) {
+                                delete existingProducts[keyValueInner];
+                            }
+                        }
+                    }
+                    var sizeOfExistingProducts = 0;
+                    var currentSimpleProductId = "";
+                    for (var keyValue in existingProducts) {
+                        currentSimpleProductId = keyValue;
+                        sizeOfExistingProducts = sizeOfExistingProducts + 1
+                    }
+
+                    if (sizeOfExistingProducts == 1) {
+                        return currentSimpleProductId;
+                    }
+
+                    return false;
+                }
+            }
+            
+            thisbackorder.afterInit();
+        //]]>
+    </script>
+<?php endif; ?>

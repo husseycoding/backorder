@@ -1,0 +1,6 @@
+app/code/community/HusseyCoding app/code/community/HusseyCoding
+app/design/frontend/base/default/layout/* app/design/frontend/base/default/layout/
+app/design/frontend/base/default/template/backorder app/design/frontend/base/default/template/backorder
+app/etc/modules/* app/etc/modules/
+skin/frontend/base/default/css/* skin/frontend/base/default/css/
+skin/frontend/base/default/js/* skin/frontend/base/default/js/

@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <backorder translate="label" module="backorder">
+            <label>Backorder</label>
+            <tab>husseycoding</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>1</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general translate="label">
+                    <label>General</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled>
+                            <label>Enable Backorder</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <ignorestock>
+                            <label>Ignore Stock</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable functionality even if product is in stock</comment>
+                        </ignorestock>
+                        <agreement>
+                            <label>Require Agreement</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Customer must agree to estimated dispatch date for products on the cart page before they can checkout</comment>
+                        </agreement>
+                        <notmanaged>
+                            <label>Enable For Non Stock Managed</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Enable functionality on products without stock management</comment>
+                        </notmanaged>
+                        <orderbefore>
+                            <label>Show Dispatch Today/Tomorrow</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>5</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Show 'dispatched today if ordered within' notice for products with no lead time</comment>
+                        </orderbefore>
+                        <cutoff>
+                            <label>Order Cut Off Time</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>6</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Time after which an order will no longer be dispatched the same day, i.e 5pm</comment>
+                        </cutoff>
+                        <fixed_holidays>
+                            <label>Fixed Holidays</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>7</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Comma separated holiday dates in day-month format i.e. 25-12,26-12</comment>
+                        </fixed_holidays>
+                        <dynamic_holidays>
+                            <label>Dynamic Holidays</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>8</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Comma separated dynamic holiday dates in format day of week (1-7, Mon-Sun)-week in the month-month i.e. 1-1-5 for May Day (first Monday in May). Use 'last' for last week of the month i.e. 1-last-5</comment>
+                        </dynamic_holidays>
+                    </fields>
+                </general>
+            </groups>
+        </backorder>
+    </sections>
+</config>
