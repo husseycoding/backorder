@@ -6,6 +6,7 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     private $_typeid;
     private $_childids = array();
     private $_bundleids = array();
+    private $_nolead;
     
     public function isEnabled()
     {
@@ -250,5 +251,28 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     public function getOrderBefore()
     {
         return Mage::helper('backorder')->getOrderBefore();
+    }
+    
+    public function getNoLeadTimestamp()
+    {
+        if (!isset($this->_nolead)):
+            $this->_nolead = Mage::helper('backorder')->getNoLeadTimestamp();
+        endif;
+        
+        return $this->_nolead;
+    }
+    
+    public function getNoLeadDateString()
+    {
+        if (!isset($this->_nolead)):
+            $this->getNoLeadTimestamp();
+        endif;
+        
+        $date = Mage::helper('backorder')->createDateString($this->_nolead);
+        if (!empty($date)):
+            return $date;
+        endif;
+        
+        return false;
     }
 }

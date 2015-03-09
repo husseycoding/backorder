@@ -39,8 +39,9 @@ var backorder = Class.create({
     },
     getOrderBeforeString: function() {
         if (!this.orderbeforestring) {
-            var cutoff = new Date(this.cutoff * 1000);
-            var now = new Date(this.now * 1000);
+            var cuttoff = Math.floor(this.cutoff / 86400);
+            var today = Math.floor(this.now / 86400);
+            var nolead = Math.floor(this.noleadtimestamp / 86400);
             var difference = this.cutoff - this.now;
             var minutes = difference / 60;
             var hours = Math.floor(minutes / 60);
@@ -48,11 +49,18 @@ var backorder = Class.create({
             minutes = Math.floor(minutes);
             if (!hours) {
                 var estimate = minutes + " minutes";
+                var noleadestimate = "24 hours and " + minutes + " minutes";
             } else {
                 var estimate = hours + " hours and " + minutes + " minutes";
+                var noleadhours = hours + 24;
+                var noleadestimate = noleadhours + " hours and " + minutes + " minutes";
             }
-            if (cutoff.getDay() > now.getDay()) {
+            if (nolead > (today + 1)) {
+                this.orderbeforestring = this.orderbeforelatertext + " <span>" + this.noleaddatestring + "</span>";
+            } else if (cuttoff > today) {
                 this.orderbeforestring = this.orderbeforetomorrowtext + " <span>" + estimate + "</span>";
+            } else if (nolead > today) {
+                this.orderbeforestring = this.orderbeforetomorrowtext + " <span>" + noleadestimate + "</span>";
             } else {
                 this.orderbeforestring = this.orderbeforetodaytext + " <span>" + estimate + "</span>";
             }

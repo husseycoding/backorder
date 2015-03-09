@@ -57,17 +57,7 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
             if (!empty($backorder)):
                 $backorder = str_replace(' and ', ' + ', $backorder);
                 if ($time = strtotime($backorder)):
-                    $estimate = new Zend_Date($time, Zend_Date::TIMESTAMP);
-                    $digit = $estimate->get(Zend_Date::WEEKDAY_8601);
-                    if (($estimate->get(Zend_Date::WEEKDAY_8601) > 5) || ($estimate->isLater($this->_getCutOff(), Zend_Date::TIMES))):
-                        $estimate->set(strtotime('+1 weekday', $estimate->toString(Zend_Date::TIMESTAMP)), Zend_Date::TIMESTAMP);
-                    endif;
-                    $estimate = $this->_setDateAfterHolidays($estimate);
-                    $estimate = $estimate->toString(Zend_Date::TIMESTAMP);
-                    $estimate = date('l, jS F', $estimate);
-                    if (!empty($estimate)):
-                        return $estimate;
-                    endif;
+                    return $this->_getEstimateString($time);
                 endif;
             endif;
         endif;
@@ -88,6 +78,35 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
         endif;
         
         return false;
+    }
+    
+    private function _getEstimateString($time, $format = true)
+    {
+        $estimate = new Zend_Date($time, Zend_Date::TIMESTAMP);
+        $digit = $estimate->get(Zend_Date::WEEKDAY_8601);
+        if (($estimate->get(Zend_Date::WEEKDAY_8601) > 5) || ($estimate->isLater($this->_getCutOff(), Zend_Date::TIMES))):
+            $estimate->set(strtotime('+1 weekday', $estimate->toString(Zend_Date::TIMESTAMP)), Zend_Date::TIMESTAMP);
+        endif;
+        $estimate = $this->_setDateAfterHolidays($estimate);
+        $estimate = $estimate->toString(Zend_Date::TIMESTAMP);
+        if ($format):
+            $estimate = $this->_createDateString($estimate);
+            if (!empty($estimate)):
+                return $estimate;
+            endif;
+        endif;
+        
+        return !empty($estimate) ? $estimate : false;
+    }
+    
+    public function createDateString($timestamp)
+    {
+        return $this->_createDateString($timestamp);
+    }
+    
+    private function _createDateString($timestamp)
+    {
+        return date('l, jS F', $timestamp);
     }
     
     private function _getCutOff()
@@ -221,5 +240,12 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
         endif;
         
         return false;
+    }
+    
+    public function getNoLeadTimestamp()
+    {
+        $now = Mage::getModel('core/date')->timestamp();
+        
+        return $this->_getEstimateString($now, false);
     }
 }

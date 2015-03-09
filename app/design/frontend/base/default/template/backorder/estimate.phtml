@@ -10,6 +10,9 @@
             thisbackorder.orderbefore = <?php echo $this->getOrderBefore(); ?>;
             thisbackorder.orderbeforetodaytext = "<?php echo $this->__('Dispatched today if ordered within the next'); ?>";
             thisbackorder.orderbeforetomorrowtext = "<?php echo $this->__('Dispatched tomorrow if ordered within the next'); ?>";
+            thisbackorder.orderbeforelatertext = "<?php echo $this->__('Dispatched on'); ?>";
+            thisbackorder.noleadtimestamp = "<?php echo $this->getNoLeadTimestamp(); ?>";
+            thisbackorder.noleaddatestring = "<?php echo $this->getNoLeadDateString(); ?>";
             thisbackorder.cutoff = "<?php echo $this->getCutOff(); ?>";
             thisbackorder.now = "<?php echo Mage::getModel('core/date')->timestamp(); ?>";
             <?php if ($isproduct == 'true'): ?>
