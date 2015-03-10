@@ -9,6 +9,7 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     private $_nolead;
     private $_helper;
     private $_showorderbefore = array();
+    private $_cartproducttypes = array();
     
     public function isEnabled()
     {
@@ -150,6 +151,7 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
                     $this->_childids[$parent][] = $item;
                 else:
                     $this->_ids[] = $item->getId();
+                    $this->_cartproducttypes[] = $item->getProductType();
                     if ($item->getProductType() == 'configurable'):
                         if ($option = $item->getOptionByCode('simple_product')):
                             if ($estimate = $this->_getEstimateDate($option->getProduct())):
@@ -245,6 +247,15 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     {
         if (!empty($this->_showorderbefore)):
             return '["' . implode('","', $this->_showorderbefore) . '"]';
+        endif;
+        
+        return '[]';
+    }
+    
+    public function getCartProductTypes()
+    {
+        if (!empty($this->_cartproducttypes)):
+            return '["' . implode('","', $this->_cartproducttypes) . '"]';
         endif;
         
         return '[]';
