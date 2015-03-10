@@ -65,6 +65,13 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
         return false;
     }
     
+    public function areManagingStock($product)
+    {
+        $stock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
+        
+        return $this->_areManagingStock($stock);
+    }
+    
     private function _areManagingStock($stock)
     {
         if ($stock->getUseConfigManageStock()):

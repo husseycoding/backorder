@@ -7,15 +7,17 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     private $_childids = array();
     private $_bundleids = array();
     private $_nolead;
+    private $_helper;
+    private $_showorderbefore = array();
     
     public function isEnabled()
     {
-        return Mage::helper('backorder')->isEnabled();
+        return $this->_getHelper()->isEnabled();
     }
     
     public function acceptEnabled()
     {
-        if (Mage::helper('backorder')->acceptEnabled()):
+        if ($this->_getHelper()->acceptEnabled()):
             return 'true';
         endif;
         
@@ -60,29 +62,28 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     
     private function _getGroupedEstimates($product)
     {
-        $ids = Mage::getModel('catalog/product_type_grouped')->getChildrenIds($product->getId());
-        
-        return $this->_getEstimatesByIds($ids);
+        return $this->_getEstimatesByIds($this->_getGroupedIds($product));
+    }
+    
+    private function _getGroupedIds($product)
+    {
+        return Mage::getModel('catalog/product_type_grouped')->getChildrenIds($product->getId());
     }
     
     private function _getConfigurableEstimates($product)
     {
-        $ids = Mage::getModel('catalog/product_type_configurable')->getChildrenIds($product->getId());
-        
-        return $this->_getEstimatesByIds($ids);
+        return $this->_getEstimatesByIds($this->_getConfigurableIds($product));
+    }
+    
+    private function _getConfigurableIds($product)
+    {
+        return Mage::getModel('catalog/product_type_configurable')->getChildrenIds($product->getId());
     }
     
     private function _getBundleEstimates($product)
     {
         $estimates = array();
-        $optionCollection = $product->getTypeInstance(true)->getOptionsCollection($product);
-        $selectionCollection = $product->getTypeInstance(true)->getSelectionsCollection(
-            $product->getTypeInstance(true)->getOptionsIds($product),
-            $product
-        );
-
-        $options = $optionCollection->appendSelections($selectionCollection);
-        foreach ($options as $option):
+        foreach ($this->_getBundleOptions($product) as $option):
             if ($selections = $option->getSelections()):
                 $optionid = $option->getId();
                 foreach ($selections as $selection):
@@ -101,6 +102,17 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
         endif;
         
         return false;
+    }
+    
+    private function _getBundleOptions($product)
+    {
+        $optioncollection = $product->getTypeInstance(true)->getOptionsCollection($product);
+        $selectioncollection = $product->getTypeInstance(true)->getSelectionsCollection(
+            $product->getTypeInstance(true)->getOptionsIds($product),
+            $product
+        );
+        
+        return $optioncollection->appendSelections($selectioncollection);
     }
     
     private function _getEstimatesByIds($ids)
@@ -124,12 +136,13 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     
     private function _getEstimateDate($product)
     {
-        return Mage::helper('backorder')->getEstimatedDispatch($product);
+        return $this->_getHelper()->getEstimatedDispatch($product);
     }
     
     public function getCartEstimates()
     {
         $return = array();
+        $notmanaged = Mage::getStoreConfig('backorder/general/notmanaged');
         if ($cart = Mage::getModel('checkout/cart')->getQuote()):
             $empty = true;
             foreach ($cart->getAllItems() as $item):
@@ -142,8 +155,18 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
                             if ($estimate = $this->_getEstimateDate($option->getProduct())):
                                 $return[] = $estimate;
                                 $empty = false;
+                                $this->_showorderbefore[] = false;
                             else:
                                 $return[] = '';
+                                if (!$this->_getHelper()->areManagingStock($option->getProduct())):
+                                    if (!$notmanaged):
+                                        $this->_showorderbefore[] = false;
+                                    else:
+                                        $this->_showorderbefore[] = true;
+                                    endif;
+                                else:
+                                    $this->_showorderbefore[] = true;
+                                endif;
                             endif;
                         endif;
                     elseif ($item->getProductType() == 'bundle'):
@@ -156,25 +179,47 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
                         if ($estimate = $this->_getEstimateDate($item->getProduct())):
                             $return[] = $estimate;
                             $empty = false;
+                            $this->_showorderbefore[] = false;
                         else:
                             $return[] = '';
+                            if (!$this->_getHelper()->areManagingStock($item->getProduct())):
+                                if (!$notmanaged):
+                                    $this->_showorderbefore[] = false;
+                                else:
+                                    $this->_showorderbefore[] = true;
+                                endif;
+                            else:
+                                $this->_showorderbefore[] = true;
+                            endif;
                         endif;
                     endif;
                 endif;
             endforeach;
             
             foreach ($this->_bundleids as $bundleid):
+                $showbundlebefore = false;
                 $estimates = array();
                 if (isset($this->_childids[$bundleid])):
                     foreach ($this->_childids[$bundleid] as $childitem):
                         if ($estimate = $this->_getEstimateDate($childitem->getProduct())):
                             $epoch = strtotime($estimate);
                             $estimates[$epoch] = $estimate;
+                        elseif (!$showbundlebefore):
+                            if (!$this->_getHelper()->areManagingStock($childitem->getProduct())):
+                                if ($notmanaged):
+                                    $showbundlebefore = true;
+                                endif;
+                            else:
+                                $showbundlebefore = true;
+                            endif;
                         endif;
                     endforeach;
                     if (!empty($estimates)):
                         ksort($estimates);
                         $return[$bundleid] = end($estimates);
+                        $this->_showorderbefore[] = false;
+                    else:
+                        $this->_showorderbefore[] = $showbundlebefore;
                     endif;
                 endif;
             endforeach;
@@ -191,6 +236,15 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     {
         if (!empty($this->_ids)):
             return '["' . implode('","', $this->_ids) . '"]';
+        endif;
+        
+        return '[]';
+    }
+    
+    public function getCartShowOrderBefore()
+    {
+        if (!empty($this->_showorderbefore)):
+            return '["' . implode('","', $this->_showorderbefore) . '"]';
         endif;
         
         return '[]';
@@ -238,7 +292,7 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     
     public function getCutOff()
     {
-        $cutoff = Mage::helper('backorder')->getCutOff();
+        $cutoff = $this->_getHelper()->getCutOff();
         $return = strtotime($cutoff);
         $now = Mage::getModel('core/date')->timestamp();
         if ($now >= $return):
@@ -250,13 +304,13 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
     
     public function getOrderBefore()
     {
-        return Mage::helper('backorder')->getOrderBefore();
+        return $this->_getHelper()->getOrderBefore();
     }
     
     public function getNoLeadTimestamp()
     {
         if (!isset($this->_nolead)):
-            $this->_nolead = Mage::helper('backorder')->getNoLeadTimestamp();
+            $this->_nolead = $this->_getHelper()->getNoLeadTimestamp();
         endif;
         
         return $this->_nolead;
@@ -268,11 +322,80 @@ class HusseyCoding_Backorder_Block_Estimate extends Mage_Core_Block_Template
             $this->getNoLeadTimestamp();
         endif;
         
-        $date = Mage::helper('backorder')->createDateString($this->_nolead);
+        $date = $this->_getHelper()->createDateString($this->_nolead);
         if (!empty($date)):
             return $date;
         endif;
         
         return false;
+    }
+    
+    public function getProductShowOrderBefore()
+    {
+        $notmanaged = Mage::getStoreConfig('backorder/general/notmanaged');
+        if ($this->_getProductType() == 'grouped'):
+            $ids = $this->_getGroupedIds($this->_getProduct());
+            $orderbefore = $this->_getOrderBeforeByIds($ids, $notmanaged);
+        elseif ($this->_getProductType() == 'configurable'):
+            $ids = $this->_getConfigurableIds($this->_getProduct());
+            $orderbefore = $this->_getOrderBeforeByIds($ids, $notmanaged);
+        elseif ($this->_getProductType() == 'bundle'):
+            $orderbefore = array();
+            $options = $this->_getBundleOptions($this->_getProduct());
+            foreach ($options as $option):
+                if ($selections = $option->getSelections()):
+                    $optionid = $option->getId();
+                    foreach ($selections as $selection):
+                        $selectionid = $selection->getSelectionId();
+                        $product = Mage::getModel('catalog/product')->load($selection->getId());
+                        $orderbefore[$optionid][$selectionid] = true;
+                        if (!$this->_getHelper()->areManagingStock($product)):
+                            if (!$notmanaged):
+                                $orderbefore[$optionid][$selectionid] = false;
+                            endif;
+                        endif;
+                    endforeach;
+                endif;
+            endforeach;
+        endif;
+        
+        if (!empty($orderbefore)):
+            return Mage::helper('core')->jsonEncode($orderbefore);
+        endif;
+        
+        if (!$this->_getHelper()->areManagingStock($this->_getProduct())):
+            if (!$notmanaged):
+                return 'false';
+            endif;
+        endif;
+        
+        return 'true';
+    }
+    
+    private function _getOrderBeforeByIds($ids, $notmanaged)
+    {
+        $orderbefore = array();
+        foreach ($ids as $group):
+            foreach ($group as $id):
+                $product = Mage::getModel('catalog/product')->load($id);
+                $orderbefore[$product->getId()] = true;
+                if (!$this->_getHelper()->areManagingStock($product)):
+                    if (!$notmanaged):
+                        $orderbefore[$product->getId()] = false;
+                    endif;
+                endif;
+            endforeach;
+        endforeach;
+
+        return $orderbefore;
+    }
+    
+    private function _getHelper()
+    {
+        if (!isset($this->_helper)):
+            $this->_helper = Mage::helper('backorder');
+        endif;
+        
+        return $this->_helper;
     }
 }

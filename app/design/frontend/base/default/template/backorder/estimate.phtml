@@ -15,6 +15,7 @@
             thisbackorder.noleaddatestring = "<?php echo $this->getNoLeadDateString(); ?>";
             thisbackorder.cutoff = "<?php echo $this->getCutOff(); ?>";
             thisbackorder.now = "<?php echo Mage::getModel('core/date')->timestamp(); ?>";
+            thisbackorder.orderbeforestring = false;
             <?php if ($isproduct == 'true'): ?>
                 <?php if ($estimate = $this->getProductEstimate()): ?>
                     thisbackorder.producttype = "<?php echo $this->getProductType(); ?>";
@@ -24,6 +25,7 @@
                         thisbackorder.productestimate = <?php echo Mage::helper('core')->jsonEncode($estimate); ?>;
                     <?php endif; ?>
                 <?php endif; ?>
+                thisbackorder.showorderbefore = <?php echo $this->getProductShowOrderBefore(); ?>;
             <?php elseif ($iscart == 'true'): ?>
                 thisbackorder.cartestimates = <?php echo $this->getCartEstimates(); ?>;
                 thisbackorder.itemids = <?php echo $this->getItemIds(); ?>;
@@ -32,6 +34,7 @@
                 thisbackorder.hasaccepted = <?php echo $this->getHasAccepted(); ?>;
                 thisbackorder.acceptedids = <?php echo $this->getAcceptedIds(); ?>;
                 thisbackorder.acceptenabled = <?php echo $this->acceptEnabled(); ?>;
+                thisbackorder.showorderbefore = <?php echo $this->getCartShowOrderBefore(); ?>;
             <?php endif; ?>
             
             if (typeof(spConfig) == "object") {
