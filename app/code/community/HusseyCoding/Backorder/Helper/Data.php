@@ -40,7 +40,8 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
             $stock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
             if ($this->_areManagingStock($stock)):
                 if (!Mage::getStoreConfig('backorder/general/ignorestock')):
-                    if ($stock->getQty() > 0 && $stock->getIsInStock()):
+                    $minquantity = (int) Mage::getStoreConfig('cataloginventory/item_options/min_qty');
+                    if ($stock->getQty() > $minquantity && $stock->getIsInStock()):
                         return false;
                     else:
                         if (!$stock->getBackorders()):
