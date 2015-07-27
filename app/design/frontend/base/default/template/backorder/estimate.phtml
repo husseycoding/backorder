@@ -17,8 +17,8 @@
             thisbackorder.now = "<?php echo Mage::getModel('core/date')->timestamp(); ?>";
             thisbackorder.orderbeforestring = false;
             <?php if ($isproduct == 'true'): ?>
+                thisbackorder.producttype = "<?php echo $this->getProductType(); ?>";
                 <?php if ($estimate = $this->getProductEstimate()): ?>
-                    thisbackorder.producttype = "<?php echo $this->getProductType(); ?>";
                     <?php if (!is_array($estimate)): ?>
                         thisbackorder.productestimate = "<?php echo $estimate; ?>";
                     <?php else: ?>
