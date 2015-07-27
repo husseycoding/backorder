@@ -57,13 +57,32 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
             $backorder = $product->getBackorder();
             if (!empty($backorder)):
                 $backorder = str_replace(' and ', ' + ', $backorder);
+                $backorder = $this->_addHandlingTime($product, $backorder);
                 if ($time = strtotime($backorder)):
+                    
                     return $this->_getEstimateString($time);
                 endif;
             endif;
         endif;
         
         return false;
+    }
+    
+    private function _addHandlingTime($product, $backorder)
+    {
+        $handling = $product->getBackorderHandling();
+        if (empty($handling)):
+            $handling = Mage::getStoreConfig('backorder/general/handling_time');
+        endif;
+        
+        if (!empty($handling)):
+            $handling = str_replace(' and ', ' + ', $handling);
+            if (strtotime($handling)):
+                $backorder = $backorder . ' + ' . $handling;
+            endif;
+        endif;
+        
+        return $backorder;
     }
     
     public function areManagingStock($product)

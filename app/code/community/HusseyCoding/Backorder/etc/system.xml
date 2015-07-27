@@ -94,6 +94,15 @@
                             <show_in_store>1</show_in_store>
                             <comment>Comma separated dynamic holiday dates in format day of week (1-7, Mon-Sun)-week in the month-month i.e. 1-1-5 for May Day (first Monday in May). Use 'last' for last week of the month i.e. 1-last-5</comment>
                         </dynamic_holidays>
+                        <handling_time>
+                            <label>Handling Time</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>9</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Global handling time, overridden by handling time on each product. Entered as human readable text string i.e. '1 day'</comment>
+                        </handling_time>
                     </fields>
                 </general>
             </groups>
