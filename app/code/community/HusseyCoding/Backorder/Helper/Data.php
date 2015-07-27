@@ -55,7 +55,7 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
                 endif;
             endif;
             $backorder = $product->getBackorder();
-            if (!empty($backorder)):
+            if (!empty($backorder) && !$this->_isInPast($backorder)):
                 $backorder = str_replace(' and ', ' + ', $backorder);
                 $backorder = $this->_addHandlingTime($product, $backorder);
                 if ($time = strtotime($backorder)):
@@ -83,6 +83,18 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
         endif;
         
         return $backorder;
+    }
+    
+    private function _isInPast($backorder)
+    {
+        if ($time = strtotime($backorder)):
+            $now = time();
+            if ($time < $now):
+                return true;
+            endif;
+        endif;
+        
+        return false;
     }
     
     public function areManagingStock($product)
