@@ -1,0 +1,11 @@
+<?php if ($this->isEnabled()): ?>
+    <script type="text/javascript">
+        //<![CDATA[
+            var thisbackorder = new backorder();
+            thisbackorder.orderestimates = <?php echo $this->getOrderEstimates(); ?>;
+            thisbackorder.estimatetext = "<?php echo $this->__('Estimated dispatch'); ?>";
+            
+            thisbackorder.afterInit();
+        //]]>
+    </script>
+<?php endif; ?>

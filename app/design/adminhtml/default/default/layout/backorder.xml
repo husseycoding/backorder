@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <adminhtml_sales_order_view>
+        <block type="backorder/adminhtml_estimate" name="adminhtml_backorder" template="backorder/estimate.phtml" parent="before_body_end" />
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>backorder/js/estimate.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>backorder/css/estimate.css</name>
+            </action>
+        </reference>
+    </adminhtml_sales_order_view>
+</layout>

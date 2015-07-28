@@ -4,3 +4,6 @@ app/design/frontend/base/default/template/backorder app/design/frontend/base/def
 app/etc/modules/* app/etc/modules/
 skin/frontend/base/default/css/* skin/frontend/base/default/css/
 skin/frontend/base/default/js/* skin/frontend/base/default/js/
+skin/adminhtml/default/default/backorder/* skin/adminhtml/default/default/backorder/
+app/design/adminhtml/default/default/layout/backorder.xml app/design/adminhtml/default/default/layout/backorder.xml
+app/design/adminhtml/default/default/template/backorder/* app/design/adminhtml/default/default/template/backorder/

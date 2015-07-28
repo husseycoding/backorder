@@ -19,4 +19,24 @@
         </reference>
         <block type="backorder/estimate" name="backorder" template="backorder/estimate.phtml" parent="before_body_end" />
     </backorder_layout>
+    <sales_order_view>
+        <block type="backorder/customer_estimate" name="customer_backorder" template="backorder/customer/estimate.phtml" parent="before_body_end" />
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_js</type>
+                <name>js/backorder/customer.js</name>
+            </action>
+            <action method="addItem">
+                <type>skin_css</type>
+                <name>css/backorder.css</name>
+            </action>
+        </reference>
+    </sales_order_view>
+    <sales_email_order_items>
+        <reference name="items">
+            <action method="addItemRender"><type>default</type><block>sales/order_email_items_order_default</block><template>backorder/email/order/items/order/default.phtml</template></action>
+            <action method="addItemRender"><type>grouped</type><block>sales/order_email_items_order_grouped</block><template>backorder/email/order/items/order/default.phtml</template></action>
+            <action method="addItemRender"><type>bundle</type><block>bundle/sales_order_items_renderer</block><template>backorder/bundle/email/order/items/order/default.phtml</template></action>
+        </reference>
+    </sales_email_order_items>
 </layout>
