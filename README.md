@@ -1,6 +1,6 @@
 Backorder
 =========
-Adds dispatch estimate notifications to product pages and the cart.
+Adds dispatch estimate notifications to product pages, the cart page, frontend order view, backend order view and order confirmation emails.
 
 Description
 -----------
@@ -33,6 +33,9 @@ Comma separated list of holiday dates which occur on the same date each year in 
 
 **Dynamic Holidays**
 Comma separated list of holiday dates which occur on different dates each year.  Enter in format day of week (1-7 for Mon-Sun)-week in the month-month i.e. 1-1-5 for May Day (first Monday in May). Use 'last' for last week of the month i.e. 1-last-5
+
+**Handling Time**
+Optional global or per product handling time in a human readable text string i.e. 1 day.  Per product setting overrides global setting.
 
 Support
 -------
