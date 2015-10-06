@@ -11,9 +11,9 @@ var backorder = Class.create({
                         this.initBundle();
                     } else {
                         if (this.productestimate) {
-                            $$(".availability")[0].insert({after: "<p class=\"dispatch-estimate\">" + this.estimatetext + ": <span>" + this.productestimate + "</span></p>"});
+                            $$(".price-box")[0].insert({before: "<p class=\"dispatch-estimate\">" + this.estimatetext + ": <span>" + this.productestimate + "</span></p>"});
                         } else if (this.showorderbefore) {
-                            $$(".availability")[0].insert({after: "<div class=\"dispatch-nolead\">" + this.getOrderBeforeString() + "</div>"});
+                            $$(".price-box")[0].insert({before: "<div class=\"dispatch-nolead\">" + this.getOrderBeforeString() + "</div>"});
                         }
                     }
                 }
@@ -99,9 +99,9 @@ var backorder = Class.create({
         var productid = spConfig.getIdOfSelectedProduct();
         if (productid) {
             if (this.productestimate[productid]) {
-                $$(".availability")[0].insert({after: "<p class=\"dispatch-estimate\">" + this.estimatetext + ": <span>" + this.productestimate[productid] + "</span></p>"});
+                $$(".price-box")[0].insert({before: "<p class=\"dispatch-estimate\">" + this.estimatetext + ": <span>" + this.productestimate[productid] + "</span></p>"});
             } else if (this.orderbefore && this.showorderbefore[productid]) {
-                $$(".availability")[0].insert({after: "<p class=\"dispatch-nolead\">" + this.getOrderBeforeString() + "</p>"});
+                $$(".price-box")[0].insert({before: "<p class=\"dispatch-nolead\">" + this.getOrderBeforeString() + "</p>"});
             }
         }
     },
@@ -153,9 +153,9 @@ var backorder = Class.create({
         }.bind(this));
         var estimate = this.getLongestBundleEstimate(estimates);
         if (estimate) {
-            $$(".availability")[0].insert({after: "<p class=\"dispatch-estimate\">" + this.estimatetext + ": <span>" + estimate + "</span></p>"});
+            $$(".price-box-bundle")[0].insert({before: "<p class=\"dispatch-estimate\">" + this.estimatetext + ": <span>" + estimate + "</span></p>"});
         } else if (this.orderbefore && showbundleorderbefore) {
-            $$(".availability")[0].insert({after: "<p class=\"dispatch-nolead\">" + this.getOrderBeforeString() + "</p>"});
+            $$(".price-box-bundle")[0].insert({before: "<p class=\"dispatch-nolead\">" + this.getOrderBeforeString() + "</p>"});
         }
     },
     getBundleEstimate: function(bundleid, value) {
