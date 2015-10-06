@@ -7,3 +7,4 @@ skin/frontend/base/default/js/* skin/frontend/base/default/js/
 skin/adminhtml/default/default/backorder/* skin/adminhtml/default/default/backorder/
 app/design/adminhtml/default/default/layout/backorder.xml app/design/adminhtml/default/default/layout/backorder.xml
 app/design/adminhtml/default/default/template/backorder/* app/design/adminhtml/default/default/template/backorder/
+app/locale/en_US/template/email/backorder_notification.html app/locale/en_US/template/email/backorder_notification.html
