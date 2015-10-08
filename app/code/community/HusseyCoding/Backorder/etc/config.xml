@@ -44,6 +44,15 @@
                 </observers>
             </sales_order_place_after>
         </events>
+        <template>
+            <email>
+                <backorder_general_backorder_notify_template translate="label" module="backorder">
+                    <label>Backorder Notification</label>
+                    <file>backorder_notification.html</file>
+                    <type>html</type>
+                </backorder_general_backorder_notify_template>
+            </email>
+        </template>
     </global>
     <frontend>
         <layout>
@@ -90,4 +99,11 @@
             </updates>
         </layout>
     </adminhtml>
+    <default>
+        <backorder>
+            <general>
+                <backorder_notify_template>backorder_general_backorder_notify_template</backorder_notify_template>
+            </general>
+        </backorder>
+    </default>
 </config>

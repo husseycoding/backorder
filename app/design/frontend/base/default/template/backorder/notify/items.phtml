@@ -1,0 +1,3 @@
+<?php foreach ($this->getBackorderItems() as $item): ?>
+<?php echo $item['name'] . ' (' . $item['sku'] . ') - Estimated delivery ' . $item['estimate']; ?><br />
+<?php endforeach; ?>

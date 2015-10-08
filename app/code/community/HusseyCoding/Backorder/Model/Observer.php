@@ -1,6 +1,10 @@
 <?php
 class HusseyCoding_Backorder_Model_Observer
 {
+    const XML_PATH_BACKORDER_NOTIFY_TEMPLATE = 'backorder/general/backorder_notify_template';
+    const XML_PATH_BACKORDER_NOTIFY_RECIPIENT = 'trans_email/ident_sales/email';
+    const XML_PATH_BACKORDER_NOTIFY_SENDER = 'trans_email/ident_sales/name';
+    
     private $_helper;
     
     public function frontendControllerActionPredispatchCheckout($observer)
@@ -25,6 +29,44 @@ class HusseyCoding_Backorder_Model_Observer
             Mage::getSingleton('customer/session')->setBackorderAccepted(false);
             Mage::getSingleton('customer/session')->setBackorderAcceptedIds(array());
             Mage::register('is_backorder_email', true);
+        endif;
+        
+        if (Mage::getStoreConfig('backorder/general/backorder_notify')):
+            $count = 0;
+            $backitems = array();
+            foreach ($observer->getOrder()->getAllVisibleItems() as $item):
+                if ($estimate = $item->getBackorderEstimate()):
+                    $count++;
+                    $sku = $item->getSku();
+                    $name = $item->getName();
+                    $estimate = strtotime($estimate);
+                    $estimate = date('jS F', $estimate);
+                    $backitems[] = array('name' => $name, 'estimate' => $estimate, 'sku' => $sku);
+                endif;
+            endforeach;
+
+            if ($count):
+                Mage::unregister('backorder_items');
+                Mage::register('backorder_items', $backitems);
+                $translate = Mage::getSingleton('core/translate');
+                $translate->setTranslateInline(false);
+                $mailTemplate = Mage::getModel('core/email_template');
+                $mailTemplate
+                    ->setDesignConfig(array('area' => 'frontend'))
+                    ->setReplyTo(Mage::getStoreConfig(self::XML_PATH_BACKORDER_NOTIFY_RECIPIENT))
+                    ->sendTransactional(
+                        Mage::getStoreConfig(self::XML_PATH_BACKORDER_NOTIFY_TEMPLATE),
+                        array('name' => Mage::getStoreConfig(self::XML_PATH_BACKORDER_NOTIFY_SENDER), 'email' => Mage::getStoreConfig(self::XML_PATH_BACKORDER_NOTIFY_RECIPIENT)),
+                        Mage::getStoreConfig(self::XML_PATH_BACKORDER_NOTIFY_RECIPIENT),
+                        Mage::getStoreConfig(self::XML_PATH_BACKORDER_NOTIFY_SENDER),
+                        array(
+                            'increment_id' => $observer->getOrder()->getIncrementId(),
+                            'count' => $count,
+                            'customer_name' => $observer->getOrder()->getCustomerName()
+                        )
+                );
+                $translate->setTranslateInline(true);
+            endif;
         endif;
     }
     

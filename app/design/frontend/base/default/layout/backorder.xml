@@ -39,4 +39,7 @@
             <action method="addItemRender"><type>bundle</type><block>bundle/sales_order_items_renderer</block><template>backorder/bundle/email/order/items/order/default.phtml</template></action>
         </reference>
     </sales_email_order_items>
+    <backorder_notify_items>
+        <block type="backorder/notify_items" name="root" template="backorder/notify/items.phtml" />
+    </backorder_notify_items>
 </layout>
