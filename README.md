@@ -35,7 +35,13 @@ Comma separated list of holiday dates which occur on the same date each year in 
 Comma separated list of holiday dates which occur on different dates each year.  Enter in format day of week (1-7 for Mon-Sun)-week in the month-month i.e. 1-1-5 for May Day (first Monday in May). Use 'last' for last week of the month i.e. 1-last-5
 
 **Handling Time**
-Optional global or per product handling time in a human readable text string i.e. 1 day.  Per product setting overrides global setting.
+Optional global or per product handling time in a human readable text string i.e. 1 day.  Per product setting overrides global setting
+
+**Send Backorder Notification**
+Send an email notification to the sales representative when an item is backordered
+
+**Backorder Notification Template**
+Template to use when sending the backorder notification email.  Default template supplied or can be modified by creating your own transaction email template
 
 Support
 -------
