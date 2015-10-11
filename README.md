@@ -4,7 +4,7 @@ Adds dispatch estimate notifications to product pages, the cart page, frontend o
 
 Description
 -----------
-Adds a dispatch lead time attribute to each product which should be entered as a human readable text string describing the lead time for the product, i.e. 1 week and 3 days.  For parent products (grouped, configurable and bundle) the lead time should be entered for the child simple products rather than the parent product - any lead time on a parent product will be ignored.
+Adds a dispatch lead time attribute to each product which should be entered as a human readable text string describing the lead time for the product, i.e. 1 week and 3 days.  Weekends are ignored so for instance 1 week would be interpreted as 7 working days (1 week and 2 days).  For parent products (grouped, configurable and bundle) the lead time should be entered for the child simple products rather than the parent product - any lead time on a parent product will be ignored.
 
 Usage
 -----
