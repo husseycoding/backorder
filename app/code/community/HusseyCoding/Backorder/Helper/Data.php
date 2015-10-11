@@ -58,7 +58,8 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
             if (!empty($backorder) && !$this->_isInPast($backorder)):
                 $backorder = str_replace(' and ', ' + ', $backorder);
                 $backorder = $this->_addHandlingTime($product, $backorder);
-                if ($time = strtotime($backorder)):
+                $now = Mage::getModel('core/date')->timestamp();
+                if ($time = strtotime($backorder, $now)):
                     
                     return $this->_getEstimateString($time);
                 endif;
@@ -77,7 +78,8 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
         
         if (!empty($handling)):
             $handling = str_replace(' and ', ' + ', $handling);
-            if (strtotime($handling)):
+            $now = Mage::getModel('core/date')->timestamp();
+            if (strtotime($handling, $now)):
                 $backorder = $backorder . ' + ' . $handling;
             endif;
         endif;
@@ -87,8 +89,9 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
     
     private function _isInPast($backorder)
     {
-        if ($time = strtotime($backorder)):
-            $now = time();
+        $now = Mage::getModel('core/date')->timestamp();
+        if ($time = strtotime($backorder, $now)):
+            $now = Mage::getModel('core/date')->timestamp();
             if ($time < $now):
                 return true;
             endif;
@@ -121,11 +124,21 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
     
     private function _getEstimateString($time, $format = true)
     {
-        $estimate = new Zend_Date($time, Zend_Date::TIMESTAMP);
-        $digit = $estimate->get(Zend_Date::WEEKDAY_8601);
-        if (($estimate->get(Zend_Date::WEEKDAY_8601) > 5) || ($estimate->isLater($this->_getCutOff(), Zend_Date::TIMES))):
+        $estimate = new Zend_Date(Mage::getModel('core/date')->timestamp(), Zend_Date::TIMESTAMP);
+        $end = new Zend_Date($time, Zend_Date::TIMESTAMP);
+        $between = $end->sub($estimate)->toValue();
+        $between = ceil($between/60/60/24);
+        $between--;
+        
+        if ($estimate->get(Zend_Date::WEEKDAY_8601) > 5 || $estimate->isLater($this->_getCutOff(), Zend_Date::TIMES)):
             $estimate->set(strtotime('+1 weekday', $estimate->toString(Zend_Date::TIMESTAMP)), Zend_Date::TIMESTAMP);
         endif;
+        
+        while (!empty($between) && $between > 0):
+            $estimate->set(strtotime('+1 weekday', $estimate->toString(Zend_Date::TIMESTAMP)), Zend_Date::TIMESTAMP);
+            $between--;
+        endwhile;
+        
         $estimate = $this->_setDateAfterHolidays($estimate);
         $estimate = $estimate->toString(Zend_Date::TIMESTAMP);
         if ($format):
@@ -151,7 +164,8 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
     private function _getCutOff()
     {
         if ($time = Mage::getStoreConfig('backorder/general/cutoff')):
-            if ($time = strtotime($time)):
+            $now = Mage::getModel('core/date')->timestamp();
+            if ($time = strtotime($time, $now)):
                 if ($time = date('H:i:s', $time)):
                     return $time;
                 endif;
@@ -192,14 +206,15 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
         $fixedholidays = $this->_getValidDates(Mage::getStoreConfig('backorder/general/fixed_holidays'), 2);
         $dynamicholidays = $this->_getValidDates(Mage::getStoreConfig('backorder/general/dynamic_holidays'), 3);
         
-        $thisyear = date('Y', Mage::getModel('core/date')->timestamp());
-        $nextyear = date('Y', strtotime($thisyear . ' +1 year'));
+        $now = Mage::getModel('core/date')->timestamp();
+        $thisyear = date('Y', $now);
+        $nextyear = date('Y', strtotime($thisyear . ' +1 year', $now));
         $holidays = array();
         
         foreach ($fixedholidays as $holiday):
             $holiday = explode('-', $holiday);
-            $holidays[] = strtotime($thisyear . '-' . end($holiday) . '-' . reset($holiday));
-            $holidays[] = strtotime($nextyear . '-' . end($holiday) . '-' . reset($holiday));
+            $holidays[] = strtotime($thisyear . '-' . end($holiday) . '-' . reset($holiday), $now);
+            $holidays[] = strtotime($nextyear . '-' . end($holiday) . '-' . reset($holiday), $now);
         endforeach;
         
         foreach ($dynamicholidays as $holiday):
@@ -223,7 +238,7 @@ class HusseyCoding_Backorder_Helper_Data extends Mage_Core_Helper_Abstract
                 endif;
                 
                 $earliest = (7 * ($week - 1)) + 1;
-                $weekday = date("N", mktime(0, 0, 0, $month, $earliest, $year));
+                $weekday = date('N', mktime(0, 0, 0, $month, $earliest, $year));
                 
                 if ($day == $weekday):
                     $offset = 0;
